@@ -1,6 +1,7 @@
 const botaoCriaTarefa = document.getElementById('criar-tarefa');
 const listaDeTarefas = [];
 const botaoApagaTudo = document.getElementById('apaga-tudo');
+const botaoapagaFinalizados = document.getElementById('remover-finalizados');
 
 function armazenaTarefa(texto) {
   listaDeTarefas.push(texto);
@@ -42,4 +43,19 @@ function addTarefa() {
   document.getElementById('texto-tarefa').value = '';
 }
 
+function apagaTudo() {
+  document.getElementById('lista-tarefas').innerHTML = '';
+}
 
+function removeFinalizados() {
+  const finalizados = document.getElementsByClassName('completed');
+  for (let i = finalizados.length - 1; i >= 0; i -= 1) {
+    finalizados[i].remove();
+  }
+}
+
+botaoCriaTarefa.addEventListener('click', addTarefa);
+
+botaoApagaTudo.addEventListener('click', apagaTudo);
+
+botaoapagaFinalizados.addEventListener('click', removeFinalizados);

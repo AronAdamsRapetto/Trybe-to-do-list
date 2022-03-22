@@ -1,5 +1,6 @@
 const botaoCriaTarefa = document.getElementById('criar-tarefa');
 const listaDeTarefas = [];
+const botaoApagaTudo = document.getElementById('apaga-tudo');
 
 function armazenaTarefa(texto) {
   listaDeTarefas.push(texto);
@@ -16,11 +17,20 @@ function selecionaTarefa(event) {
   }
 }
 
+function completaTarefa(event) {
+  if (event.target.classList.contains('completed')) {
+    event.target.classList.remove('completed');
+  } else {
+    event.target.classList.add('completed');
+  }
+}
+
 function criaTarefa() {
   const tarefa = document.createElement('li');
   tarefa.innerText = document.getElementById('texto-tarefa').value;
   tarefa.classList = 'tarefa';
   tarefa.addEventListener('click', selecionaTarefa);
+  tarefa.addEventListener('dblclick', completaTarefa);
   return tarefa;
 }
 
@@ -32,4 +42,4 @@ function addTarefa() {
   document.getElementById('texto-tarefa').value = '';
 }
 
-botaoCriaTarefa.addEventListener('click', addTarefa);
+

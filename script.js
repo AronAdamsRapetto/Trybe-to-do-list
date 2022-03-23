@@ -4,7 +4,8 @@ const botaoApagaTudo = document.getElementById('apaga-tudo');
 const botaoapagaFinalizados = document.getElementById('remover-finalizados');
 const botaoSalvaTarefas = document.getElementById('salvar-tarefas');
 const botaoMoveCima = document.getElementById('mover-cima');
-const botaoMoveBaixo = document.getElementById('mover-baixo');
+// const botaoMoveBaixo = document.getElementById('mover-baixo');
+const listaTarefas = document.getElementById('lista-tarefas');
 
 function armazenaTarefa(texto) {
   listaDeTarefas.push(texto);
@@ -30,7 +31,6 @@ function completaTarefa(event) {
 }
 
 function criaTarefa(texto) {
-  const listaTarefas = document.getElementById('lista-tarefas');
   const tarefa = document.createElement('li');
   tarefa.innerText = texto;
   tarefa.classList = 'tarefa';
@@ -81,20 +81,6 @@ function recarregaTarefas() {
   }
 }
 
-// function verificaPrimeiroUltimo(elemento) {
-//   let resposta;
-//   const elementoPai = document.getElementById('lista-tarefas');
-//   if (
-//     elemento.innerText === elementoPai.firstElementChild.innerText
-//     || elemento.innerText === elementoPai.lastElementChild.innerText
-//   ) {
-//     resposta = true;
-//   } else {
-//     resposta = false;
-//   }
-//   return resposta;
-// }
-
 // function moverCima() {
 //   const tarefas = document.getElementsByClassName('tarefa');
 //   let auxMoveTarefa = '';
@@ -116,9 +102,8 @@ function recarregaTarefas() {
 
 function validaPrimeiroElemento() {
   let resposta;
-  const elementoPai = document.getElementById('lista-tarefas');
   const selecionado = document.getElementsByClassName('selected');
-  if (selecionado[0].innerText === elementoPai.firstElementChild.innerText) {
+  if (selecionado[0].innerText === listaTarefas.firstElementChild.innerText) {
     resposta = true;
   } else {
     resposta = false;
@@ -128,8 +113,7 @@ function validaPrimeiroElemento() {
 
 function validaUltimoElemento(elemento) {
   let resposta;
-  const elementoPai = document.getElementById('lista-tarefas');
-  if (elemento.innerText === elementoPai.lastElementChild.innerText) {
+  if (elemento.innerText === listaTarefas.lastElementChild.innerText) {
     resposta = true;
   } else {
     resposta = false;
@@ -137,46 +121,39 @@ function validaUltimoElemento(elemento) {
   return resposta;
 }
 
-function moveClasseDeSelecao() {
+function moveClasseDeSelecaoCima() {
   const tarefas = document.getElementsByClassName('tarefa');
   for (let i = 0; i < tarefas.length; i += 1) {
     if (tarefas[i].classList.contains('selected')) {
       tarefas[i].previousElementSibling.classList.add('selected');
       tarefas[i].classList.remove('selected');
     }
-    // if (tarefas[i].classList.contains('completed')) {
-    //   tarefas[i].previousElementSibling.classList.add('completed');
-    //   tarefas[i].classList.remove('completed');
-    // }
   }
 }
 
-function moveClasseDeConclusao() {
-  const tarefas = document.getElementsByClassName('tarefa');
-  for (let i = 0; i < tarefas.length; i += 1) {
-    if (
-      tarefas[i].classList.contains('completed')
-      && tarefas[i].previousElementSibling.classList.contains('completed')
-    ) {
-      break;
-    } else
-      if (tarefas[i].classList.contains('completed')) {
-      tarefas[i].previousElementSibling.classList.add('completed');
-      tarefas[i].classList.remove('completed');
-    }
+function moveClasseDeConclusao(elemento) {
+  if (elemento.previousElementSibling.classList.contains('completed') && elemento.classList.contains('completed')) {
+    elemento.classList.add('completed');
+    elemento.previousElementSibling.classList.add('completed');
+  } else if (elemento.previousElementSibling.classList.contains('completed')) {
+    elemento.previousElementSibling.classList.remove('completed');
+    elemento.classList.add('completed');
+  } else if (elemento.classList.contains('completed')) {
+    elemento.classList.remove('completed');
+    elemento.previousElementSibling.classList.add('completed');
   }
 }
-const selecionado = document.getElementsByClassName('selected');
+
 function moverCima() {
   const selecionado = document.getElementsByClassName('selected');
   const verificaElemento = validaPrimeiroElemento();
   let auxMoveTarefa;
   if (verificaElemento === false) {
+    moveClasseDeConclusao(selecionado[0]);
     auxMoveTarefa = selecionado[0].previousElementSibling.innerHTML;
     selecionado[0].previousElementSibling.innerHTML = selecionado[0].innerHTML;
     selecionado[0].innerHTML = auxMoveTarefa;
-    moveClasseDeSelecao();
-    moveClasseDeConclusao();
+    moveClasseDeSelecaoCima();
   }
 }
 

@@ -4,7 +4,7 @@ const botaoApagaTudo = document.getElementById('apaga-tudo');
 const botaoapagaFinalizados = document.getElementById('remover-finalizados');
 const botaoSalvaTarefas = document.getElementById('salvar-tarefas');
 const botaoMoveCima = document.getElementById('mover-cima');
-// const botaoMoveBaixo = document.getElementById('mover-baixo');
+const botaoMoveBaixo = document.getElementById('mover-baixo');
 const listaTarefas = document.getElementById('lista-tarefas');
 
 function armazenaTarefa(texto) {
@@ -17,6 +17,8 @@ function selecionaTarefa(event) {
   if (tarefaSelecionada.length >= 1) {
     tarefaSelecionada[0].classList.remove('selected');
     event.target.classList.add('selected');
+  } else if (event.target.classList.contains('selected')) {
+    event.target.classList.remove('selected');
   } else if (event.target.classList.contains('selected') === false) {
     event.target.classList.add('selected');
   }
@@ -81,25 +83,6 @@ function recarregaTarefas() {
   }
 }
 
-// function moverCima() {
-//   const tarefas = document.getElementsByClassName('tarefa');
-//   let auxMoveTarefa = '';
-//   for (let i = 0; i < tarefas.length; i += 1) {
-//     if (tarefas[i].classList.contains('selected')) {
-//       const verificaElemento = verificaPrimeiroUltimo(tarefas[i]);
-//       if (verificaElemento === true) {
-//         break;
-//       } else {
-//         auxMoveTarefa = tarefas[i].previousElementSibling.innerHTML;
-//         tarefas[i].previousElementSibling.innerHTML = tarefas[i].innerHTML;
-//         tarefas[i].innerHTML = auxMoveTarefa;
-//         tarefas[i].previousElementSibling.classList.add('selected');
-//         tarefas[i].classList.remove('selected');
-//       }
-//     }
-//   }
-// }
-
 function validaPrimeiroElemento() {
   let resposta;
   const selecionado = document.getElementsByClassName('selected');
@@ -111,9 +94,10 @@ function validaPrimeiroElemento() {
   return resposta;
 }
 
-function validaUltimoElemento(elemento) {
+function validaUltimoElemento() {
   let resposta;
-  if (elemento.innerText === listaTarefas.lastElementChild.innerText) {
+  const selecionado = document.getElementsByClassName('selected');
+  if (selecionado[0].innerText === listaTarefas.lastElementChild.innerText) {
     resposta = true;
   } else {
     resposta = false;
@@ -131,8 +115,22 @@ function moveClasseDeSelecaoCima() {
   }
 }
 
-function moveClasseDeConclusao(elemento) {
-  if (elemento.previousElementSibling.classList.contains('completed') && elemento.classList.contains('completed')) {
+function moveClasseDeSelecaoBaixo() {
+  const tarefas = document.getElementsByClassName('tarefa');
+  for (let i = 0; i < tarefas.length; i += 1) {
+    if (tarefas[i].classList.contains('selected')) {
+      tarefas[i].nextElementSibling.classList.add('selected');
+      tarefas[i].classList.remove('selected');
+      break;
+    }
+  }
+}
+
+function moveClasseDeConclusaoCima(elemento) {
+  if (
+    elemento.previousElementSibling.classList.contains('completed')
+    && elemento.classList.contains('completed')
+  ) {
     elemento.classList.add('completed');
     elemento.previousElementSibling.classList.add('completed');
   } else if (elemento.previousElementSibling.classList.contains('completed')) {
@@ -144,37 +142,55 @@ function moveClasseDeConclusao(elemento) {
   }
 }
 
-function moverCima() {
-  const selecionado = document.getElementsByClassName('selected');
-  const verificaElemento = validaPrimeiroElemento();
-  let auxMoveTarefa;
-  if (verificaElemento === false) {
-    moveClasseDeConclusao(selecionado[0]);
-    auxMoveTarefa = selecionado[0].previousElementSibling.innerHTML;
-    selecionado[0].previousElementSibling.innerHTML = selecionado[0].innerHTML;
-    selecionado[0].innerHTML = auxMoveTarefa;
-    moveClasseDeSelecaoCima();
+function moveClasseDeConclusaoBaixo(elemento) {
+  if (
+    elemento.nextElementSibling.classList.contains('completed')
+    && elemento.classList.contains('completed')
+  ) {
+    elemento.classList.add('completed');
+    elemento.nextElementSibling.classList.add('completed');
+  } else if (elemento.nextElementSibling.classList.contains('completed')) {
+    elemento.nextElementSibling.classList.remove('completed');
+    elemento.classList.add('completed');
+  } else if (elemento.classList.contains('completed')) {
+    elemento.classList.remove('completed');
+    elemento.nextElementSibling.classList.add('completed');
   }
 }
 
-// function moverBaixo() {
-//   const tarefas = document.getElementsByClassName('tarefa');
-//   let auxMoveTarefa = '';
-//   for (let i = 0; i < tarefas.length; i += 1) {
-//     if (tarefas[i].classList.contains('selected')) {
-//       const verificaElemento = verificaPrimeiroUltimo(tarefas[i]);
-//       if (verificaElemento === true) {
-//         break;
-//       } else {
-//         auxMoveTarefa = tarefas[i].nextElementSibling.innerHTML;
-//         tarefas[i].nextElementSibling.innerHTML = tarefas[i].innerHTML;
-//         tarefas[i].innerHTML = auxMoveTarefa;
-//         tarefas[i].nextElementSibling.classList.add('selected');
-//         tarefas[i].classList.remove('selected');
-//       }
-//     }
-//   }
-// }
+function moverCima() {
+  const selecionado = document.getElementsByClassName('selected');
+  if (selecionado.length === 0) {
+    console.log('Nenhuma seleção feita alterações indiponíveis');
+  } else {
+    const verificaElemento = validaPrimeiroElemento();
+    let auxMoveTarefa;
+    if (verificaElemento === false) {
+      moveClasseDeConclusaoCima(selecionado[0]);
+      auxMoveTarefa = selecionado[0].previousElementSibling.innerHTML;
+      selecionado[0].previousElementSibling.innerHTML = selecionado[0].innerHTML;
+      selecionado[0].innerHTML = auxMoveTarefa;
+      moveClasseDeSelecaoCima();
+    }
+  }
+}
+
+function moverBaixo() {
+  const selecionado = document.getElementsByClassName('selected');
+  if (selecionado.length === 0) {
+    console.log('Nenhuma seleção feita alterações indiponíveis');
+  } else {
+    const verificaElemento = validaUltimoElemento();
+    let auxMoveTarefa;
+    if (verificaElemento === false) {
+      moveClasseDeConclusaoBaixo(selecionado[0]);
+      auxMoveTarefa = selecionado[0].nextElementSibling.innerHTML;
+      selecionado[0].nextElementSibling.innerHTML = selecionado[0].innerHTML;
+      selecionado[0].innerHTML = auxMoveTarefa;
+      moveClasseDeSelecaoBaixo();
+    }
+  }
+}
 
 botaoCriaTarefa.addEventListener('click', addTarefa);
 
@@ -186,7 +202,7 @@ botaoSalvaTarefas.addEventListener('click', salvarTarefas);
 
 botaoMoveCima.addEventListener('click', moverCima);
 
-// botaoMoveBaixo.addEventListener('click', moverBaixo);
+botaoMoveBaixo.addEventListener('click', moverBaixo);
 
 window.onload = function () {
   recarregaTarefas();

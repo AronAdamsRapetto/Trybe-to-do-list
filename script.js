@@ -7,6 +7,7 @@ const botaoMoveCima = document.getElementById('mover-cima');
 const botaoMoveBaixo = document.getElementById('mover-baixo');
 const listaTarefas = document.getElementById('lista-tarefas');
 let listaDeTarefasFinalizadas = [];
+const botaoRemoveSelecionado = document.getElementById('remover-selecionado');
 
 function armazenaTarefa(texto) {
   listaDeTarefas.push(texto);
@@ -72,7 +73,7 @@ function apagaTudo() {
 
 function salvarTarefas() {
   localStorage.setItem('tarefas', JSON.stringify(listaDeTarefas));
-  localStorage.setItem('tarefas finalizadas', JSON.stringify(listaDeTarefasFinalizadas));
+  localStorage.setItem('finalizadas', JSON.stringify(listaDeTarefasFinalizadas));
 }
 
 function removeFinalizados() {
@@ -98,7 +99,6 @@ function validaPrimeiroElemento() {
   }
   return resposta;
 }
-
 function validaUltimoElemento() {
   let resposta;
   const selecionado = document.getElementsByClassName('selected');
@@ -119,7 +119,6 @@ function moveClasseDeSelecaoCima() {
     }
   }
 }
-
 function moveClasseDeSelecaoBaixo() {
   const tarefas = document.getElementsByClassName('tarefa');
   for (let i = 0; i < tarefas.length; i += 1) {
@@ -146,7 +145,6 @@ function moveClasseDeConclusaoCima(elemento) {
     elemento.previousElementSibling.classList.add('completed');
   }
 }
-
 function moveClasseDeConclusaoBaixo(elemento) {
   if (
     elemento.nextElementSibling.classList.contains('completed')
@@ -179,7 +177,6 @@ function moverCima() {
     }
   }
 }
-
 function moverBaixo() {
   const selecionado = document.getElementsByClassName('selected');
   if (selecionado.length === 0) {
@@ -197,12 +194,22 @@ function moverBaixo() {
   }
 }
 
+function removeSelecionado() {
+  const selecionado = document.getElementsByClassName('selected');
+  for (let i = 0; i < listaDeTarefas.length; i += 1) {
+    if (listaDeTarefas[i] === selecionado[0].innerText) {
+      listaDeTarefas.splice(i, 1);
+      selecionado[0].remove();
+    }
+  }
+}
+
 function validaStorage() {
   if (localStorage.getItem('tarefas') === null) {
     localStorage.setItem('tarefas', JSON.stringify([]));
   }
-  if (localStorage.getItem('tarefas finalizadas') === null) {
-    localStorage.setItem('tarefas finalizadas', JSON.stringify([]));
+  if (localStorage.getItem('finalizadas') === null) {
+    localStorage.setItem('finalizadas', JSON.stringify([]));
   }
 }
 
@@ -219,7 +226,7 @@ function validadorRecarregamento(texto1, texto2, tarefa) {
 function recarregaTarefas() {
   validaStorage();
   listaDeTarefas = JSON.parse(localStorage.getItem('tarefas'));
-  listaDeTarefasFinalizadas = JSON.parse(localStorage.getItem('tarefas finalizadas'));
+  listaDeTarefasFinalizadas = JSON.parse(localStorage.getItem('finalizadas'));
   for (let i = 0; i < listaDeTarefas.length; i += 1) {
     const tarefa = criaTarefa(listaDeTarefas[i]);
     for (let k = 0; k < listaDeTarefasFinalizadas.length; k += 1) {
@@ -229,17 +236,11 @@ function recarregaTarefas() {
 }
 
 botaoCriaTarefa.addEventListener('click', addTarefa);
-
 botaoApagaTudo.addEventListener('click', apagaTudo);
-
 botaoapagaFinalizados.addEventListener('click', removeFinalizados);
-
 botaoSalvaTarefas.addEventListener('click', salvarTarefas);
-
 botaoMoveCima.addEventListener('click', moverCima);
-
 botaoMoveBaixo.addEventListener('click', moverBaixo);
+botaoRemoveSelecionado.addEventListener('click', removeSelecionado);
 
-window.onload = function () {
-  recarregaTarefas();
-};
+window.onload = recarregaTarefas;

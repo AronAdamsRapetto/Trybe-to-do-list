@@ -6,9 +6,22 @@ const botaoSalvaTarefas = document.getElementById('salvar-tarefas');
 const botaoMoveCima = document.getElementById('mover-cima');
 const botaoMoveBaixo = document.getElementById('mover-baixo');
 const listaTarefas = document.getElementById('lista-tarefas');
+let listaDeTarefasFinalizadas = [];
 
 function armazenaTarefa(texto) {
   listaDeTarefas.push(texto);
+}
+
+function armazenaTarefaFinalizada(texto) {
+  listaDeTarefasFinalizadas.push(texto);
+}
+
+function removeTarefaFinalizada(texto) {
+  for (let i = 0; i < listaDeTarefasFinalizadas.length; i += 1) {
+    if (listaDeTarefasFinalizadas[i] === texto) {
+      listaDeTarefasFinalizadas.splice(i, 1);
+    }
+  }
 }
 
 function selecionaTarefa(event) {
@@ -27,8 +40,10 @@ function selecionaTarefa(event) {
 function completaTarefa(event) {
   if (event.target.classList.contains('completed')) {
     event.target.classList.remove('completed');
+    removeTarefaFinalizada(event.target.innerText);
   } else {
     event.target.classList.add('completed');
+    armazenaTarefaFinalizada(event.target.innerText);
   }
 }
 
@@ -57,6 +72,7 @@ function apagaTudo() {
 
 function salvarTarefas() {
   localStorage.setItem('tarefas', JSON.stringify(listaDeTarefas));
+  localStorage.setItem('tarefas finalizadas', JSON.stringify(listaDeTarefasFinalizadas));
 }
 
 function removeFinalizados() {
@@ -70,17 +86,6 @@ function removeFinalizados() {
     }
   }
   salvarTarefas();
-}
-
-function recarregaTarefas() {
-  if (localStorage.getItem('tarefas') === null) {
-    localStorage.setItem('tarefas', JSON.stringify([]));
-  } else {
-    listaDeTarefas = JSON.parse(localStorage.getItem('tarefas'));
-    for (let i = 0; i < listaDeTarefas.length; i += 1) {
-      criaTarefa(listaDeTarefas[i]);
-    }
-  }
 }
 
 function validaPrimeiroElemento() {
@@ -188,6 +193,37 @@ function moverBaixo() {
       selecionado[0].nextElementSibling.innerHTML = selecionado[0].innerHTML;
       selecionado[0].innerHTML = auxMoveTarefa;
       moveClasseDeSelecaoBaixo();
+    }
+  }
+}
+
+function validaStorage() {
+  if (localStorage.getItem('tarefas') === null) {
+    localStorage.setItem('tarefas', JSON.stringify([]));
+  }
+  if (localStorage.getItem('tarefas finalizadas') === null) {
+    localStorage.setItem('tarefas finalizadas', JSON.stringify([]));
+  }
+}
+
+function addClasseRecarregamento(elemento) {
+  elemento.classList.add('completed');
+}
+
+function validadorRecarregamento(texto1, texto2, tarefa) {
+  if (texto1 === texto2) {
+    addClasseRecarregamento(tarefa);
+  }
+}
+
+function recarregaTarefas() {
+  validaStorage();
+  listaDeTarefas = JSON.parse(localStorage.getItem('tarefas'));
+  listaDeTarefasFinalizadas = JSON.parse(localStorage.getItem('tarefas finalizadas'));
+  for (let i = 0; i < listaDeTarefas.length; i += 1) {
+    const tarefa = criaTarefa(listaDeTarefas[i]);
+    for (let k = 0; k < listaDeTarefasFinalizadas.length; k += 1) {
+      validadorRecarregamento(listaDeTarefas[i], listaDeTarefasFinalizadas[k], tarefa);
     }
   }
 }

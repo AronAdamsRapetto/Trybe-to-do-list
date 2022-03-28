@@ -5,6 +5,7 @@
 
 .selected {
   background-color: gray;
+  color: white;
 }
 
 .completed {
